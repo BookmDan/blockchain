@@ -22,7 +22,7 @@ const calculateHashForBlock = (block) => {
 const generateNextBlock = (blockchain, blockData) => {
   const previousBlock = blockchain[blockchain.length - 1];
   if (!previousBlock) {
-    throw new Error("Previous block is undefined");
+      throw new Error("Previous block is undefined");
   }
   const nextIndex = previousBlock.index + 1;
   const nextTimestamp = new Date().getTime() / 1000;
@@ -30,8 +30,8 @@ const generateNextBlock = (blockchain, blockData) => {
   let nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);
 
   while (nextHash.substring(0, 4) !== '0000') {
-    nonce++;
-    nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);
+      nonce++;
+      nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);
   }
 
   return new Block(nextIndex, previousBlock.hash, nextTimestamp, blockData, nextHash, nonce);
