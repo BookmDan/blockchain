@@ -1,16 +1,15 @@
-// const { initP2PServer, connectToPeers, broadcast, responseLatestMsg, blockchain, sockets } = require('./p2p');
 const WebSocket = require('ws');
+const Blockchain = require('./blockchain');
+
 const MessageType = {
   QUERY_LATEST: 0,
   QUERY_ALL: 1,
   RESPONSE_BLOCKCHAIN: 2
 };
-
-let blockchain;
+const blockchain = new Blockchain();
 const sockets = [];
 
-const initP2PServer = (p2pPort, chain) => {
-  blockchain = chain;
+const initP2PServer = (p2pPort) => {
   const server = new WebSocket.Server({ port: p2pPort });
   server.on('connection', (ws) => initConnection(ws));
   console.log('listening websocket p2p port on: ' + p2pPort);

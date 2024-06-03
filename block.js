@@ -3,10 +3,10 @@ const CryptoJS = require('crypto-js');
 class Block {
   constructor(index, previousHash, timestamp, data, hash, nonce) {
     this.index = index;
-    this.previousHash = previousHash.toString();
+    this.previousHash = previousHash ? previousHash.toString() : ''; // Ensure previousHash is not undefined
     this.timestamp = timestamp;
     this.data = data;
-    this.hash = hash.toString();
+    this.hash = hash ? hash.toString() : ''; // Ensure hash is not undefined
     this.nonce = nonce;
   }
 }
@@ -21,6 +21,9 @@ const calculateHashForBlock = (block) => {
 
 const generateNextBlock = (blockchain, blockData) => {
   const previousBlock = blockchain[blockchain.length - 1];
+  if (!previousBlock) {
+    throw new Error("Previous block is undefined");
+  }
   const nextIndex = previousBlock.index + 1;
   const nextTimestamp = new Date().getTime() / 1000;
   let nonce = 0;
