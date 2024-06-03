@@ -15,13 +15,13 @@ const initHttpServer = () => {
     const app = express();
     app.use(bodyParser.json());
 
-    app.get('/blocks', (req, res) => res.send(JSON.stringify(blockchain.chain))); // Access the chain property of blockchain
+    app.get('/blocks', (req, res) => res.send(JSON.stringify(blockchain.chain)));
     app.post('/mineBlock', (req, res) => {
-        const newBlock = generateNextBlock(blockchain.chain, req.body.data); // Ensure correct parameter order
+        const newBlock = generateNextBlock(blockchain.chain, req.body.data);
         blockchain.addBlock(newBlock);
         broadcast(responseLatestMsg(blockchain));
         console.log('block added: ' + JSON.stringify(newBlock));
-        res.send(newBlock); // Send the new block as the response
+        res.send(newBlock);
     });
     app.get('/peers', (req, res) => {
         res.send(sockets.map(s => s._socket.remoteAddress + ':' + s._socket.remotePort));
