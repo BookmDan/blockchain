@@ -1,7 +1,7 @@
-Blockchain Implementation Summary Report 
-June 4, 2024 
-Daniel Oh 
-Resources: https://tinyurl.com/LauriHartikkaMediumpost , https://github.com/lhartikk/naivechain
+Blockchain Implementation Summary Report <br>
+June 4, 2024 <br>
+Daniel Oh <br>
+Resources: https://tinyurl.com/LauriHartikkaMediumpost , https://github.com/lhartikk/naivechain <br> <br>
 
 ## Task: 
 • A summary of how you implemented the blockchain and how to use it. <br>
