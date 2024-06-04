@@ -1,5 +1,6 @@
 const { Block, calculateHash, calculateHashForBlock, generateNextBlock } = require('./block');
 
+// Defines Blockchain class
 class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()];
@@ -21,6 +22,7 @@ class Blockchain {
     }
   }
 
+  // Validates a block before adding it to the chain
   isValidNewBlock(newBlock, previousBlock) {
     if (previousBlock.index + 1 !== newBlock.index) {
       console.log('invalid index');

@@ -1,3 +1,7 @@
+/**
+ * Module for managing peer-to-peer communication in a blockchain network.
+ **/
+
 const WebSocket = require('ws');
 const Blockchain = require('./blockchain');
 
@@ -6,15 +10,17 @@ const MessageType = {
   QUERY_ALL: 1,
   RESPONSE_BLOCKCHAIN: 2
 };
-const blockchain = new Blockchain();
+
 const sockets = [];
 
+// Initializes p2p server
 const initP2PServer = (p2pPort, blockchain) => {
   const server = new WebSocket.Server({ port: p2pPort });
   server.on('connection', (ws) => initConnection(ws, blockchain));
   console.log('listening websocket p2p port on: ' + p2pPort);
 };
 
+// Initializes connection with a peer
 const initConnection = (ws, blockchain) => {
   sockets.push(ws);
   initMessageHandler(ws, blockchain);
@@ -39,6 +45,7 @@ const initConnection = (ws, blockchain) => {
 
 const JSONToObject = (data) => JSON.parse(data);
 
+// Initializes the message handler for a WebSocket connection.
 const initMessageHandler = (ws, blockchain) => {
   ws.on('message', (data) => {
     const message = JSONToObject(data);
@@ -56,8 +63,10 @@ const initMessageHandler = (ws, blockchain) => {
   });
 };
 
+// Writes a message to a WebSocket connection.
 const write = (ws, message) => ws.send(JSON.stringify(message));
 
+// Constructs a message requesting the latest block in the blockchain.
 const queryChainLengthMsg = () => ({ type: MessageType.QUERY_LATEST });
 const queryAllMsg = () => ({ type: MessageType.QUERY_ALL });
 const responseChainMsg = (blockchain) => ({
@@ -69,6 +78,7 @@ const responseLatestMsg = (blockchain) => ({
   data: JSON.stringify([blockchain.getLatestBlock()])
 });
 
+// Handles a response containing blockchain data from a peer.
 const handleBlockchainResponse = (message, blockchain) => {
   const receivedBlocks = JSONToObject(message.data).sort((b1, b2) => b1.index - b2.index);
   const latestBlockReceived = receivedBlocks[receivedBlocks.length - 1];
@@ -111,6 +121,7 @@ const connectToPeers = (newPeers, blockchain) => {
   });
 };
 
+// Broadcasts a message to all connected peers.
 const broadcast = (message) => sockets.forEach((socket) => write(socket, message));
 
 module.exports = { initP2PServer, connectToPeers, broadcast, responseLatestMsg, sockets };

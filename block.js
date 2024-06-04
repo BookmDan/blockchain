@@ -1,6 +1,10 @@
 const CryptoJS = require('crypto-js');
 
+/**
+ * Represents a block in the blockchain.
+ */
 class Block {
+  // Creates a new block 
   constructor(index, previousHash, timestamp, data, hash, nonce) {
     this.index = index;
     this.previousHash = previousHash ? previousHash.toString() : ''; // Ensure previousHash is not undefined
@@ -11,6 +15,7 @@ class Block {
   }
 }
 
+// Calculates the SHA-256 hash for given block parameters
 const calculateHash = (index, previousHash, timestamp, data, nonce) => {
   return CryptoJS.SHA256(index + previousHash + timestamp + data + nonce).toString();
 };
@@ -29,6 +34,7 @@ const generateNextBlock = (blockchain, blockData) => {
   let nonce = 0;
   let nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);
 
+  // Proof-of-Work: find a hash that meets the difficulty target
   while (nextHash.substring(0, 4) !== '0000') {
       nonce++;
       nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);

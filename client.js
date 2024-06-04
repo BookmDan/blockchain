@@ -1,5 +1,6 @@
 const axios = require('axios');
 
+// Set the HTTP port from env variable, default set to 3001 
 const http_port = process.env.HTTP_PORT || 3001;
 
 const getBlocks = async () => {
@@ -29,7 +30,3 @@ const addPeer = async (peer) => {
   }
 };
 
-// Example usage:
-getBlocks();
-mineBlock('Some data');
-addPeer('ws://localhost:6001');
