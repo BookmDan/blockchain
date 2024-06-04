@@ -27,12 +27,12 @@ const initHttpServer = () => {
         res.send(sockets.map(s => s._socket.remoteAddress + ':' + s._socket.remotePort));
     });
     app.post('/addPeer', (req, res) => {
-        connectToPeers([req.body.peer]);
+        connectToPeers([req.body.peer], blockchain);
         res.send();
     });
     app.listen(http_port, () => console.log('Listening http on port: ' + http_port));
 };
 
-connectToPeers(initialPeers);
+connectToPeers(initialPeers, blockchain);
 initHttpServer();
 initP2PServer(p2p_port, blockchain); // Pass blockchain instance to the P2P server

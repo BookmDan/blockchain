@@ -9,15 +9,15 @@ const MessageType = {
 const blockchain = new Blockchain();
 const sockets = [];
 
-const initP2PServer = (p2pPort) => {
+const initP2PServer = (p2pPort, blockchain) => {
   const server = new WebSocket.Server({ port: p2pPort });
-  server.on('connection', (ws) => initConnection(ws));
+  server.on('connection', (ws) => initConnection(ws, blockchain));
   console.log('listening websocket p2p port on: ' + p2pPort);
 };
 
-const initConnection = (ws) => {
+const initConnection = (ws, blockchain) => {
   sockets.push(ws);
-  initMessageHandler(ws);
+  initMessageHandler(ws, blockchain);
   initErrorHandler(ws);
   write(ws, queryChainLengthMsg());
 
@@ -25,13 +25,13 @@ const initConnection = (ws) => {
     const message = JSON.parse(data);
     switch (message.type) {
       case MessageType.QUERY_LATEST:
-        write(ws, responseLatestMsg());
+        write(ws, responseLatestMsg(blockchain));
         break;
       case MessageType.QUERY_ALL:
-        write(ws, responseChainMsg());
+        write(ws, responseChainMsg(blockchain));
         break;
       case MessageType.RESPONSE_BLOCKCHAIN:
-        handleBlockchainResponse(message);
+        handleBlockchainResponse(message, blockchain);
         break;
     }
   });
@@ -39,18 +39,18 @@ const initConnection = (ws) => {
 
 const JSONToObject = (data) => JSON.parse(data);
 
-const initMessageHandler = (ws) => {
+const initMessageHandler = (ws, blockchain) => {
   ws.on('message', (data) => {
     const message = JSONToObject(data);
     switch (message.type) {
       case MessageType.QUERY_LATEST:
-        write(ws, responseLatestMsg());
+        write(ws, responseLatestMsg(blockchain));
         break;
       case MessageType.QUERY_ALL:
-        write(ws, responseChainMsg());
+        write(ws, responseChainMsg(blockchain));
         break;
       case MessageType.RESPONSE_BLOCKCHAIN:
-        handleBlockchainResponse(message);
+        handleBlockchainResponse(message, blockchain);
         break;
     }
   });
@@ -60,16 +60,16 @@ const write = (ws, message) => ws.send(JSON.stringify(message));
 
 const queryChainLengthMsg = () => ({ type: MessageType.QUERY_LATEST });
 const queryAllMsg = () => ({ type: MessageType.QUERY_ALL });
-const responseChainMsg = () => ({
+const responseChainMsg = (blockchain) => ({
   type: MessageType.RESPONSE_BLOCKCHAIN,
   data: JSON.stringify(blockchain.chain)
 });
-const responseLatestMsg = () => ({
+const responseLatestMsg = (blockchain) => ({
   type: MessageType.RESPONSE_BLOCKCHAIN,
   data: JSON.stringify([blockchain.getLatestBlock()])
 });
 
-const handleBlockchainResponse = (message) => {
+const handleBlockchainResponse = (message, blockchain) => {
   const receivedBlocks = JSONToObject(message.data).sort((b1, b2) => b1.index - b2.index);
   const latestBlockReceived = receivedBlocks[receivedBlocks.length - 1];
   const latestBlockHeld = blockchain.getLatestBlock();
@@ -79,7 +79,7 @@ const handleBlockchainResponse = (message) => {
     if (latestBlockHeld.hash === latestBlockReceived.previousHash) {
       console.log('We can append the received block to our chain');
       blockchain.addBlock(latestBlockReceived);
-      broadcast(responseLatestMsg());
+      broadcast(responseLatestMsg(blockchain));
     } else if (receivedBlocks.length === 1) {
       console.log('We have to query the chain from our peer');
       broadcast(queryAllMsg());
@@ -101,10 +101,10 @@ const initErrorHandler = (ws) => {
   ws.on('error', () => closeConnection(ws));
 };
 
-const connectToPeers = (newPeers) => {
+const connectToPeers = (newPeers, blockchain) => {
   newPeers.forEach((peer) => {
     const ws = new WebSocket(peer);
-    ws.on('open', () => initConnection(ws));
+    ws.on('open', () => initConnection(ws, blockchain));
     ws.on('error', () => {
       console.log('connection failed');
     });
