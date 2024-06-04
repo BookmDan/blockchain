@@ -4,7 +4,7 @@ Daniel Oh
 Resources: https://tinyurl.com/LauriHartikkaMediumpost , https://github.com/lhartikk/naivechain
 
 ## Task: 
-• A summary of how you implemented the blockchain and how to use it.
+• A summary of how you implemented the blockchain and how to use it. <br>
 • Any challenges you faced and how you overcame them.
 
 ## Summary of Implementation:
